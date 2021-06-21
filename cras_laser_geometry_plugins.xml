@@ -1,0 +1,7 @@
+<library path="lib/libcras_laser_geometry_plugins">
+  <class name="cras_laser_geometry/scan_to_point_cloud" type="cras_laser_geometry::ScanToPointCloud" base_class_type="nodelet::Nodelet">
+    <description>
+  	  Nodelet converting laser scans to point clouds.
+    </description>
+  </class>
+</library>

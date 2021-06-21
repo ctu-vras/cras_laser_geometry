@@ -1,0 +1,26 @@
+<package format="2">
+  <name>cras_laser_geometry</name>
+  <version>1.1.0</version>
+  <description>
+    Tools for working with laser scans.
+  </description>
+  <maintainer email="petrito1@fel.cvut.cz">Tomas Petricek</maintainer>
+  <license>BSD</license>
+  
+  <url>http://nifti.eu</url>
+  <author>Tomas Petricek</author>
+  
+  <buildtool_depend>catkin</buildtool_depend>
+  
+  <depend>cras_cpp_common</depend>
+  <depend>laser_geometry</depend>
+  <depend>nodelet</depend>
+  <depend>roscpp</depend>
+  <depend>sensor_msgs</depend>
+  <depend>tf2_ros</depend>
+
+  <export>
+    <nodelet plugin="${prefix}/cras_laser_geometry_plugins.xml" />
+  </export>
+</package>
+

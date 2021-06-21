@@ -1,0 +1,13 @@
+<launch>
+  <!-- Example launch file -->
+  <node name="scan_to_point_cloud" pkg="nodelet" type="nodelet" args="standalone cras_laser_geometry/scan_to_point_cloud" respawn="true">
+    <param name="target_frame"       value=""/>
+    <param name="wait_for_transform" value="0.5"/>
+    <param name="channel_options"    value="17"/>
+    <param name="scan_queue"         value="50"/>
+    <param name="point_cloud_queue"  value="50"/>
+
+    <remap from="scan"  to="scan_filtered"/>
+    <remap from="cloud" to="scan_point_cloud"/>
+  </node>
+</launch>
