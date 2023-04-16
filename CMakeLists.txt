@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0.1)
+cmake_minimum_required(VERSION 3.10.2)
 project(cras_laser_geometry)
 
 find_package(catkin REQUIRED
@@ -12,17 +12,7 @@ find_package(catkin REQUIRED
 )
 find_package(OpenCV REQUIRED COMPONENTS core)
 
-catkin_package(
-  CATKIN_DEPENDS
-    cras_cpp_common
-    laser_geometry
-    nodelet
-    roscpp
-    sensor_msgs
-    tf2_ros
-  DEPENDS OpenCV
-  LIBRARIES ${PROJECT_NAME}_plugins
-)
+catkin_package()
 
 include_directories(${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})
 
