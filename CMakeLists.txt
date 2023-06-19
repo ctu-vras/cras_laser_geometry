@@ -10,14 +10,13 @@ find_package(catkin REQUIRED
     sensor_msgs
     tf2_ros
 )
-find_package(OpenCV REQUIRED COMPONENTS core)
 
 catkin_package()
 
-include_directories(${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})
+include_directories(${catkin_INCLUDE_DIRS})
 
 add_library(${PROJECT_NAME}_plugins src/${PROJECT_NAME}/scan_to_point_cloud2.cpp)
-target_link_libraries(${PROJECT_NAME}_plugins ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
+target_link_libraries(${PROJECT_NAME}_plugins ${catkin_LIBRARIES})
 
 install(
   TARGETS ${PROJECT_NAME}_plugins
