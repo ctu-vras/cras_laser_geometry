@@ -2,8 +2,8 @@
 Changelog for package cras_laser_geometry
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.2.0 (2024-01-09)
+------------------
 * Added options fixed_frame and tf_cache.
 * Contributors: Martin Pecka
 
