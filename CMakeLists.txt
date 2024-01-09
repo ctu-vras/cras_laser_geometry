@@ -17,6 +17,7 @@ include_directories(${catkin_INCLUDE_DIRS})
 
 add_library(${PROJECT_NAME}_plugins src/${PROJECT_NAME}/scan_to_point_cloud2.cpp)
 target_link_libraries(${PROJECT_NAME}_plugins ${catkin_LIBRARIES})
+cras_node_from_nodelet(${PROJECT_NAME}_plugins ${PROJECT_NAME}::ScanToPointCloud OUTPUT_NAME scan_to_point_cloud)
 
 install(
   TARGETS ${PROJECT_NAME}_plugins

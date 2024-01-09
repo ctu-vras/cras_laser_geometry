@@ -25,7 +25,9 @@ public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 private:
   std::string targetFrame;
+  std::string fixedFrame;
   ros::Duration waitForTransform;
+  ros::Duration tfBufferSize;
   /**
    * @brief channelOptions Channels to extract.
    *
@@ -42,8 +44,8 @@ private:
   uint32_t scanQueue;
   /** @brief Point cloud queue size. */
   uint32_t pointCloudQueue;
-  tf2_ros::Buffer tfBuffer;
-  tf2_ros::TransformListener transformListener;
+  std::unique_ptr<tf2_ros::Buffer> tfBuffer;
+  std::unique_ptr<tf2_ros::TransformListener> transformListener;
   ros::Subscriber scanSubscriber;
   laser_geometry::LaserProjection projector;
   ros::Publisher pointCloudPublisher;
@@ -51,12 +53,12 @@ private:
 
 ScanToPointCloud::ScanToPointCloud():
   targetFrame(""),
-  waitForTransform(0.0),
+  fixedFrame(""),
+  waitForTransform(0.01),
+  tfBufferSize(30.0),
   channelOptions(laser_geometry::channel_option::Default),
   scanQueue(10),
-  pointCloudQueue(10),
-  tfBuffer(),
-  transformListener(tfBuffer) {
+  pointCloudQueue(10) {
 }
 
 void ScanToPointCloud::onInit() {
@@ -67,10 +69,15 @@ void ScanToPointCloud::onInit() {
 
   // Process parameters.
   targetFrame = this->getParam(pnh, "target_frame", targetFrame);
-  waitForTransform = this->getParam(pnh, "wait_for_transform", ros::Duration(0.01), "s");
+  fixedFrame = this->getParam(pnh, "fixed_frame", fixedFrame);
+  waitForTransform = this->getParam(pnh, "wait_for_transform", waitForTransform, "s");
+  tfBufferSize = this->getParam(pnh, "tf_cache", tfBufferSize, "s");
   channelOptions = this->getParam(pnh, "channel_options", channelOptions);
   scanQueue = this->getParam(pnh, "scan_queue", scanQueue);
   pointCloudQueue = this->getParam(pnh, "point_cloud_queue", pointCloudQueue);
+
+  this->tfBuffer = std::make_unique<tf2_ros::Buffer>(tfBufferSize);
+  this->transformListener = std::make_unique<tf2_ros::TransformListener>(*this->tfBuffer);
 
   // Subscribe scan topic.
   std::string scanTopic = nh.resolveName("scan", true);
@@ -90,17 +97,19 @@ void ScanToPointCloud::scanCallback(const sensor_msgs::LaserScan::ConstPtr &scan
   this->updateThreadName();
   std::string frame = !targetFrame.empty() ? targetFrame : scanPtr->header.frame_id;
   std::string tfError;
+  const auto scanFinished = scanPtr->header.stamp + ros::Duration(scanPtr->scan_time);
   if (frame != scanPtr->header.frame_id
-      && !tfBuffer.canTransform(frame, scanPtr->header.frame_id,
-                                scanPtr->header.stamp + ros::Duration(scanPtr->scan_time),
-                                ros::Duration(waitForTransform), &tfError)) {
+      && !tfBuffer->canTransform(frame, scanFinished,
+                                 scanPtr->header.frame_id, scanFinished,
+                                 fixedFrame,
+                                 ros::Duration(waitForTransform), &tfError)) {
     NODELET_WARN("ScanToPointCloud::scanCallback: Cannot transform from %s to %s at %.2f s. Error %s",
                  scanPtr->header.frame_id.c_str(), frame.c_str(), scanPtr->header.stamp.toSec(), tfError.c_str());
     return;
   }
   sensor_msgs::PointCloud2::Ptr cloud2(new sensor_msgs::PointCloud2);
   try {
-    projector.transformLaserScanToPointCloud(frame, *scanPtr, *cloud2, tfBuffer, -1.0, channelOptions);
+    projector.transformLaserScanToPointCloud(frame, *scanPtr, *cloud2, fixedFrame, *tfBuffer, -1.0, channelOptions);
     pointCloudPublisher.publish(cloud2);
     // NODELET_DEBUG("ScanToPointCloud::scanCallback: Converting scan to point cloud: %.3f s.",
     // (ros::Time::now() - t1).toSec());

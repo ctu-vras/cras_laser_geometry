@@ -14,7 +14,9 @@ This package provides a nodelet for converting laser scans to point clouds.
 
 ### Parameters
 - `target_frame` (`str`) Target frame to transform point cloud to.
+- `fixed_frame` (`str`) Fixed frame used for the transformation.
 - `wait_for_transform` (`double`) Seconds to wait until transforms is available.
+- `tf_cache` (`double`) Length of TF cache history (in seconds).
 - `channel_options` (`int`) Channels to extract from laser scans.
 - `scan_queue` (`int`) Scan queue size.
 - `point_cloud_queue` (`int`) Point cloud queue size.
