@@ -96,9 +96,10 @@ void ScanToPointCloud::scanCallback(const sensor_msgs::LaserScan::ConstPtr &scan
   // Wait for the transform if the target frame differs from that of the scan.
   this->updateThreadName();
   std::string frame = !targetFrame.empty() ? targetFrame : scanPtr->header.frame_id;
+  std::string fixedFrame = !this->fixedFrame.empty() ? this->fixedFrame : frame;
   std::string tfError;
   const auto scanFinished = scanPtr->header.stamp + ros::Duration(scanPtr->scan_time);
-  if (frame != scanPtr->header.frame_id
+  if ((frame != scanPtr->header.frame_id || fixedFrame != frame)
       && !tfBuffer->canTransform(frame, scanFinished,
                                  scanPtr->header.frame_id, scanFinished,
                                  fixedFrame,
