@@ -2,8 +2,8 @@
 Changelog for package cras_laser_geometry
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.2.1 (2024-01-26)
+------------------
 * Fixed waiting for transforms in case fixed frame is specified and target frame is not.
 * Contributors: Martin Pecka
 
